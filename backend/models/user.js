@@ -7,7 +7,7 @@ const userSchema = mongoose.Schema({
     password: {type: String, required: true}, // how do I ensure this is unique? use external validator mongoose-unique-validator
  });
 
- module.exports = mongoose.model('User', userSchema);
+ module.exports = mongoose.model('user', userSchema);
 
 // User
 // ● email: String — the user's email address [unique].

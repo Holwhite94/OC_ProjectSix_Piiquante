@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 // route imports
 const router = express.Router();
 const userRoutes = require('./routes/user');
+const saucesRoutes = require('./routes/sauces');
 
 // create express app
 const app = express(); 
@@ -39,6 +40,8 @@ app.use((req, res, next) => {
 // register routes 
 
 app.use('/api/auth', userRoutes);
+
+app.use('/api/sauces', saucesRoutes);
 
 
 
