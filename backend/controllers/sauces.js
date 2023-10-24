@@ -1,14 +1,13 @@
-// NEXT:
-// GET all sauces 
-// Create new sauce + images thing 
 
-// NEW MEETING TO DISCUSS LIKE / DISLIKE  but try do that first :) 
 
 //import sauce model
 const Sauce = require('../models/sauces');
 
 // import multer
 const multer = require('multer');
+
+//import fs
+const fs = require('fs');
 
 // get all sauces 
 
@@ -27,6 +26,27 @@ exports.getAllSauces = (req, res, next) => {
       }
     );
   };
+  
+// find one sauce 
+
+exports.getOneSauce = (req, res, next) => {
+    // find one sauce with request sauce id
+    Sauce.findOne({_id: req.params.id,})
+      .then(
+      (sauce) => {
+        res.status(200).json(sauce);
+      }
+    )
+    .catch(
+      (error) => {
+        res.status(400).json({
+          error: error
+        });
+      }
+    );
+  };
+
+
 
 // create sauce 
 exports.createSauce = (req, res, next) => {
@@ -61,4 +81,127 @@ newSauce
         error: error,
     });
 });
+};
+
+// like dislike 
+
+exports.likeDislike = (req, res, next) => {
+    Sauce.findOne({_id: req.params.id,}).then(sauce=>{
+
+      // like = 1  user liked 
+        if(req.body.like == 1){
+          sauce.likes++
+          sauce.usersLiked.push(req.body.userId)
+          sauce.save().then(()=>{
+            res.json({message : "user Liked"})
+          })
+          
+          
+        }
+        // like = -1 user disliked 
+        else if (req.body.like == -1){
+          sauce.dislikes++
+          sauce.usersDisliked.push(req.body.userId)
+          sauce.save().then(()=>{
+            res.json({message : "user DisLiked"})
+          })
+          
+        }
+        // like = 0  user eather liked or disliked 
+        else{
+          if(sauce.usersLiked.includes(req.body.userId)){
+            sauce.likes--
+            sauce.usersLiked.splice(sauce.usersLiked.indexOf(req.body.userId),1)
+            sauce.save().then(()=>{
+              res.json({message : "user unLiked"})
+            })
+          }
+          if(sauce.usersDisliked.includes(req.body.userId)){
+            sauce.dislikes--
+            sauce.usersDisliked.splice(sauce.usersDisliked.indexOf(req.body.userId),1)
+            sauce.save().then(()=>{
+              res.json({message : "user unLiked"})
+            })
+          }
+        }
+    })
+};
+
+// delete sauce 
+
+exports.deleteSauce = (req, res, next) => {
+  // find sauce to be deleted
+  Sauce.findOne({_id: req.params.id})
+  .then((sauce) => {
+     // split url to get filename to be deleted
+      const filename = sauce.imageUrl.split('/images/')[1];
+      fs.unlink('images/' + filename, () => {
+        // delete the sauce
+        Sauce.deleteOne({_id: req.params.id})
+    .then(() => {
+            res.status(200).json({
+              message: 'Sauce deleted!'
+            });
+          })
+        .catch(
+          (error) => {
+            res.status(400).json({
+              error: error
+            });
+          }
+        );
+      });
+    }
+  );
+};
+
+// update sauce 
+
+exports.updateSauce = (req, res, next) => {
+  let sauce = new Sauce({ _id: req.params._id });
+  if (req.file) {
+    const url = req.protocol + "://" + req.get("host");
+    req.body.sauce = JSON.parse(req.body.sauce);
+    sauce = {
+      _id: req.params.id,
+      userId: req.body.sauce.userId,
+      name: req.body.sauce.name,
+      manufacturer: req.body.sauce.manufacturer,
+      description: req.body.sauce.description,
+      mainPepper: req.body.sauce.mainPepper,
+      imageUrl: url + "/images/" + req.file.filename,
+      heat: req.body.sauce.heat,
+      likes: req.body.sauce.likes,
+      dislikes: req.body.sauce.dislikes,
+      usersLiked: req.body.sauce.usersLiked,
+      usersDisliked: req.body.sauce.usersDisliked,
+    };
+  } else {
+    sauce = {
+      _id: req.params.id,
+      userId: req.body.userId,
+      name: req.body.name,
+      manufacturer: req.body.manufacturer,
+      description: req.body.description,
+      mainPepper: req.body.mainPepper,
+      heat: req.body.heat,
+      likes: req.body.likes,
+      dislikes: req.body.dislikes,
+      usersLiked: req.body.usersLiked,
+      usersDisliked: req.body.usersDisliked,
+    };
+  }
+  Sauce.updateOne({_id: req.params.id}, sauce)
+  .then(() => {
+      res.status(201).json({
+        message: 'Sauce updated successfully!'
+      });
+    })
+  .catch(
+    (error) => {
+      res.status(400).json({
+        error: error
+      });
+    }
+  );
 };

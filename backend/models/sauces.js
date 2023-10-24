@@ -10,8 +10,8 @@ const sauceSchema = mongoose.Schema({
     heat: {type: Number, required: true}, // do I have to specify here that it will be number between 1-10?
     likes: {type: Number, required: true},
     dislikes: {type: Number, required: true},
-    usersLikes: {type:["String <userId>"], required: true}, // array of strings - user id's
-    usersDisliked:{type:["String <userId>"], required: true},
+    usersLiked: {type:[], required: true}, // array of strings - user id's
+    usersDisliked:{type:[], required: true},
 });
 
 
