@@ -184,6 +184,7 @@ exports.updateSauce = (req, res, next) => {
       manufacturer: req.body.manufacturer,
       description: req.body.description,
       mainPepper: req.body.mainPepper,
+      imageUrl: req.body.imageUrl,
       heat: req.body.heat,
       likes: req.body.likes,
       dislikes: req.body.dislikes,
