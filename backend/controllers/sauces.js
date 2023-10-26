@@ -196,7 +196,7 @@ exports.updateSauce = (req, res, next) => {
   Sauce.updateOne({ _id: req.params.id }, sauce).then(
     () => {
       res.status(201).json({
-        message: "Item updated successfully!"
+        message: "Sauce updated successfully"
       });
     }
   ).catch(
