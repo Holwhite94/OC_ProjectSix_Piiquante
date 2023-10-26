@@ -29,7 +29,7 @@ router.post('/:id/like', auth, saucesController.likeDislike);
 router.delete('/:id', auth, saucesController.deleteSauce);
 
 // update sauce 
-router.put('/:id', auth, saucesController.updateSauce);
+router.put('/:id', auth, multer, saucesController.updateSauce);
 
 
 
