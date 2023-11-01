@@ -6,7 +6,7 @@ const Sauce = require('../models/sauces');
 // import multer
 const multer = require('multer');
 
-//import fs
+//import fs - file system
 const fs = require('fs');
 
 // get all sauces 
@@ -52,9 +52,10 @@ exports.getOneSauce = (req, res, next) => {
 exports.createSauce = (req, res, next) => {
     //string to object
     req.body.sauce = JSON.parse(req.body.sauce);
-    //reconstruct url from request = http + :// + localhost:etc.
+    //reconstruct url from request = http + :// + localhost:etc. to create part of imageUrl
     const url = req.protocol + '://' + req.get('host');
   
+    // create new sauce with data from the request
     const newSauce = new Sauce ({
         userId: req.body.sauce.userId,
         name: req.body.sauce.name,
@@ -90,8 +91,8 @@ exports.likeDislike = (req, res, next) => {
 
       // like = 1  user liked 
         if(req.body.like == 1){
-          sauce.likes++
-          sauce.usersLiked.push(req.body.userId)
+          sauce.likes++ // increase by one
+          sauce.usersLiked.push(req.body.userId) // add user ID to array of 'users liked'
           sauce.save().then(()=>{
             res.json({message : "user Liked"})
           })
@@ -109,8 +110,9 @@ exports.likeDislike = (req, res, next) => {
         }
         // like = 0  user eather liked or disliked 
         else{
+          //check to see if userID present in usersLiked if it it we remove the user 
           if(sauce.usersLiked.includes(req.body.userId)){
-            sauce.likes--
+            sauce.likes-- 
             sauce.usersLiked.splice(sauce.usersLiked.indexOf(req.body.userId),1)
             sauce.save().then(()=>{
               res.json({message : "user unLiked"})
@@ -133,7 +135,7 @@ exports.deleteSauce = (req, res, next) => {
   // find sauce to be deleted
   Sauce.findOne({_id: req.params.id})
   .then((sauce) => {
-     // split url to get filename to be deleted
+     // split url to get the image filename to be deleted
       const filename = sauce.imageUrl.split('/images/')[1];
       fs.unlink('images/' + filename, () => {
         // delete the sauce
@@ -157,7 +159,9 @@ exports.deleteSauce = (req, res, next) => {
 
 // update sauce 
 exports.updateSauce = (req, res, next) => {
+  //check whichb sauce to be updated
   let sauce = new Sauce({ _id: req.params._id });
+  // if therer IS an image 
   if (req.file) {
     const url = req.protocol + '://' + req.get('host');
     req.body.sauce = JSON.parse(req.body.sauce);
@@ -175,7 +179,7 @@ exports.updateSauce = (req, res, next) => {
       usersDisliked: [],
       userId: req.body.sauce.userId
     };
-  } else {
+  } else { // without image update directly from request body
     sauce = {
       _id: req.params.id,
       name: req.body.name,
