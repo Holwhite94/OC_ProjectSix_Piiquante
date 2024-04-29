@@ -1,3 +1,9 @@
+The Brief - Build a Secure API for a Review App
+
+- I was tasked with building a backend API with noSQL database for which I used mongoose + mongoDB for a sauce ecommerce website. 
+- I sucessfully created the backend for the site given, with the capabilities to create a user, create a sauce, like and unlike the sauces and delete. I then presented this project and passed.
+
+
 # HotTakes
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.4.
